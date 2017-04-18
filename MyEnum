@@ -1,0 +1,75 @@
+defmodule MyEnum do
+  # Enum.all?
+  def all?([head|tail],fun) do
+    if fun.(head) do
+      all?(tail,fun)
+    else
+      false
+    end
+  end
+  def all?([],_), do: true
+
+  # Enum.each
+  def each([],_) do
+  end
+  def each([head|tail],fun) do
+    fun.(head)
+    each(tail,fun)
+  end
+
+  # Enum.filter
+  def filter([head|tail],fun) do
+    if fun.(head) do
+      _filter(tail,fun,[head])
+    else
+      _filter(tail,fun,[])
+    end
+  end
+  defp _filter([head|tail],fun,list) do
+    if fun.(head) do
+      _filter(tail,fun,[head|list])
+    else
+      _filter(tail,fun,list)
+    end
+  end
+  defp _filter([],_,list) do
+    Enum.reverse(list)
+  end
+
+  # Enum.split
+  def split(list,num) do
+    _split(list,num,0,[])
+  end
+  defp _split([head|tail],num,times,left) do
+    if times < num do
+      _split(tail,num,times+1,Enum.reverse([head|left]))
+    else
+      {left,[head|tail]}
+    end
+  end
+  defp _split([],_,_,left) do
+    {left,[]}
+  end
+
+  # Enum.take
+  def take(list,num) do
+    _take(list,num,0,[])
+  end
+  defp _take([head|tail],num,times,left) do
+    if times < num do
+      _take(tail,num,times+1,Enum.reverse([head|left]))
+    else
+      left
+    end
+  end
+  defp _take([],_,_,left) do
+    left
+  end
+
+end # End of MyEnum
+
+list = Enum.to_list(1..10)
+# do some testing...
+IO.inspect MyEnum.split(list, 2)
+IO.inspect MyEnum.take(list, 2)
+IO.inspect MyEnum.filter(list,&(&1>4))
